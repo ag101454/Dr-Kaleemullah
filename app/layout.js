@@ -43,6 +43,9 @@ export const metadata = {
   alternates: {
     canonical: "/",
   },
+  verification: {
+    google: "wUtZyVpXE2DLGexCd5a3iLrKFn3_6buY9PRuYSmtypE",
+  },
   openGraph: {
     type: "website",
     url: siteUrl,
@@ -76,7 +79,7 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en" className={`${sans.variable} ${serif.variable}`}>
       <body className="min-h-dvh antialiased">
-      <StructuredData />
+        <StructuredData />
         <a
           href="#main"
           className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-[100] focus:rounded-full focus:bg-ink-900 focus:px-4 focus:py-2 focus:text-sm focus:text-cream-50"
