@@ -207,7 +207,7 @@ export const doctor = {
 
   // ---- SEO ----
   seo: {
-    siteUrl: "https://drkaleemullah.com", // ← replace with the real domain once live
+    siteUrl: "https://dr-kaleemullah.vercel.app", // ← replace with the real domain once live
     siteName: "Dr. Kaleem Ullah",
     defaultDescription:
       "Professor & Chairman, Department of Thoracic Surgery, Nishtar Hospital, Multan. Clinical thoracic surgery, postgraduate education, and academic leadership.",
