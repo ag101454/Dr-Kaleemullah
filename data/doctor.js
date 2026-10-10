@@ -38,6 +38,46 @@ export const doctor = {
     mapEmbedUrl: "",
   },
 
+      // ---- Hospitals where the doctor practices ----
+  hospitals: [
+    {
+      name: "Nishtar Hospital",
+      area: "Multan",
+      primary: true,
+      mapUrl: "https://www.google.com/maps/search/?api=1&query=Nishtar+Hospital+Multan",
+    },
+    {
+      name: "Chenab Hospital",
+      area: "Chungi No. 1, Multan",
+      mapUrl: "https://www.google.com/maps/search/?api=1&query=Chenab+Hospital+Chungi+No+1+Multan",
+    },
+    {
+      name: "South Punjab Hospital",
+      area: "Multan",
+      mapUrl: "https://www.google.com/maps/search/?api=1&query=South+Punjab+Hospital+Multan",
+    },
+    {
+      name: "Mukhtar A. Sheikh Hospital",
+      area: "Multan",
+      mapUrl: "https://www.google.com/maps/search/?api=1&query=Mukhtar+A+Sheikh+Hospital+Multan",
+    },
+    {
+      name: "Buch International Hospital",
+      area: "Multan",
+      mapUrl: "https://www.google.com/maps/search/?api=1&query=Buch+International+Hospital+Multan",
+    },
+    {
+      name: "City Hospital",
+      area: "Multan",
+      mapUrl: "https://www.google.com/maps/search/?api=1&query=City+Hospital+Multan",
+    },
+    {
+      name: "Fatima Hospital",
+      area: "Multan",
+      mapUrl: "https://www.google.com/maps/search/?api=1&query=Fatima+Hospital+Multan",
+    },
+  ],
+
   // ---- Credentials ----
   qualifications: [
     {
@@ -91,30 +131,94 @@ export const doctor = {
   ],
 
   // ---- Practice ----
-  services: [
+   // ---- Services (bilingual — EN + UR) ----
+   services: [
     {
-      slug: "thoracic-surgical-consultation",
-      icon: "Stethoscope",
-      title: "Thoracic Surgical Consultation",
+      slug: "vats",
+      title: "Video-Assisted Thoracoscopic Surgery (VATS)",
+      titleUr: "ویڈیو اسسٹڈ تھوراکوسکوپک سرجری",
       description:
-        "Clinical evaluation and surgical assessment for thoracic conditions, with personalized care planning.",
-      details: "",
+        "Minimally invasive chest surgery performed using a camera and small incisions.",
+      descriptionUr:
+        "کیمرے اور چھوٹے چیروں کی مدد سے سینے کا آپریشن کیا جاتا ہے۔",
     },
     {
-      slug: "surgical-evaluation-second-opinion",
-      icon: "ClipboardCheck",
-      title: "Surgical Evaluation & Second Opinion",
+      slug: "oesophagus-stomach",
+      title: "Oesophagus and Stomach Diseases",
+      titleUr: "غذائی نالی اور معدے کی بیماریاں",
       description:
-        "Detailed review of imaging, prior reports, and clinical history for patients considering thoracic surgery.",
-      details: "",
+        "Treatment and surgery for diseases, cancer, and obstructions of the oesophagus (food pipe) and stomach.",
+      descriptionUr:
+        "خوراک کی نالی اور معدے کی بیماریوں، کینسر اور رکاوٹوں کا علاج اور آپریشن۔",
     },
     {
-      slug: "post-operative-follow-up",
-      icon: "HeartPulse",
-      title: "Post-Operative Follow-Up",
+      slug: "corrosive-ingestion",
+      title: "Corrosive Ingestion",
+      titleUr: "تیزابی یا مضر کیمیکل نگلنے سے ہونے والا نقصان",
       description:
-        "Structured follow-up and recovery monitoring after thoracic surgical procedures.",
-      details: "",
+        "Treatment of damage and narrowing of the food pipe caused by swallowing corrosive substances.",
+      descriptionUr:
+        "تیزاب یا نقصان دہ کیمیکل نگلنے سے غذائی نالی کو پہنچنے والے نقصان اور اس کی تنگی کا علاج۔",
+    },
+    {
+      slug: "lung-tumors",
+      title: "Lung Tumors",
+      titleUr: "پھیپھڑوں کی رسولیاں",
+      description: "Surgical treatment of lung tumors and lung cancer.",
+      descriptionUr: "پھیپھڑوں کی رسولیوں اور کینسر کا جراحی علاج۔",
+    },
+    {
+      slug: "lung-diseases",
+      title: "Lung Diseases",
+      titleUr: "پھیپھڑوں کی بیماریاں",
+      description:
+        "Treatment of various lung diseases, including bronchiectasis, tuberculosis (TB), hydatid cyst, and lung abscess.",
+      descriptionUr:
+        "پھیپھڑوں کی مختلف بیماریوں کا علاج، جن میں برونکیکٹیسس، تپِ دق (ٹی بی)، ہائیڈیٹڈ سسٹ، اور پھیپھڑوں میں پیپ کا پھوڑا شامل ہیں۔",
+    },
+    {
+      slug: "tracheal-diseases",
+      title: "Tracheal Diseases",
+      titleUr: "سانس کی نالی کی بیماریاں",
+      description:
+        "Treatment and surgery for diseases, narrowing, and tumors of the trachea (windpipe).",
+      descriptionUr:
+        "سانس کی نالی کی بیماریوں، تنگی اور رسولیوں کا علاج اور آپریشن۔",
+    },
+    {
+      slug: "pleural-space",
+      title: "Pleural Space Diseases",
+      titleUr: "پھیپھڑوں کے گرد موجود جگہ کی بیماریاں",
+      description:
+        "Treatment of conditions affecting the pleural space, including the accumulation of air or fluid around the lungs.",
+      descriptionUr:
+        "پھیپھڑوں کے گرد موجود جگہ میں ہوا یا پانی جمع ہونے جیسی بیماریوں کا علاج۔",
+    },
+    {
+      slug: "chest-wall",
+      title: "Chest Wall Diseases",
+      titleUr: "سینے کی دیوار کی بیماریاں",
+      description:
+        "Treatment and surgery for conditions affecting the chest wall.",
+      descriptionUr: "سینے کی دیوار کو متاثر کرنے والی بیماریوں کا علاج اور آپریشن۔",
+    },
+    {
+      slug: "diaphragm-surgery",
+      title: "Diaphragm Surgery",
+      titleUr: "ڈایافرام کی سرجری",
+      description:
+        "Surgical treatment of diseases and abnormalities of the diaphragm, the muscle separating the chest and abdomen.",
+      descriptionUr:
+        "سینے اور پیٹ کے درمیان موجود پٹھے (ڈایافرام) کی بیماریوں اور نقائص کا آپریشن۔",
+    },
+    {
+      slug: "mediastinal-mass",
+      title: "Mediastinal Mass — Biopsy and Surgery",
+      titleUr: "سینے کے درمیانی حصے کی رسولی — بایوپسی اور آپریشن",
+      description:
+        "Biopsy and surgical treatment of masses or tumors in the mediastinum, the central area of the chest between the lungs.",
+      descriptionUr:
+        "دونوں پھیپھڑوں کے درمیان سینے کے درمیانی حصے میں موجود رسولی یا گلٹی کی بایوپسی اور آپریشن۔",
     },
   ],
 

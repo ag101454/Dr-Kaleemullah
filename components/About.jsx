@@ -1,135 +1,136 @@
 import Link from "next/link";
-import { ArrowUpRight, Quote } from "lucide-react";
+import {
+  Award,
+  CalendarHeart,
+  MapPin,
+  MessageCircle,
+  ShieldCheck,
+  Stethoscope,
+} from "lucide-react";
 import { doctor } from "@/data/doctor";
+import { whatsappUrl } from "@/lib/utils";
 import DoctorPortrait from "@/components/DoctorPortrait";
-import Reveal from "@/components/Reveal";
 
 export default function About() {
-  const hasExpertise = doctor.expertise?.length > 0;
-  const hasLanguages = doctor.languages?.length > 0;
-  const hasMemberships = doctor.memberships?.length > 0;
+  if (!doctor.biography) return null;
 
-  const hasContent =
-    doctor.biography ||
-    hasExpertise ||
-    hasLanguages ||
-    hasMemberships ||
-    doctor.qualifications?.length;
-
-  if (!hasContent) return null;
+  const wa = whatsappUrl(
+    doctor.whatsapp,
+    `Hello ${doctor.name}, I would like to book an appointment.`
+  );
 
   return (
     <section
       id="about"
       aria-labelledby="about-heading"
-      className="container-page py-20 md:py-28"
+      className="relative overflow-hidden bg-white py-14 md:py-28"
     >
-      <div className="grid gap-12 md:grid-cols-12 md:gap-14">
-        <Reveal className="md:col-span-5" y={24}>
-          <div className="relative mx-auto aspect-[4/5] w-full max-w-sm md:mx-0">
+      {/* Ambient glow */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0 -z-10 overflow-hidden"
+      >
+        <div className="absolute -top-32 right-0 h-72 w-72 bg-blob-cyan blur-3xl md:h-96 md:w-96" />
+      </div>
+
+      <div className="container-page grid items-center gap-10 md:grid-cols-12 md:gap-16">
+        {/* Portrait — DESKTOP ONLY */}
+        <div className="hidden md:col-span-5 md:order-2 md:block">
+          <div className="relative mx-auto max-w-md">
             <div
               aria-hidden="true"
-              className="absolute inset-0 translate-x-4 translate-y-4 rounded-[1.75rem] border border-line-strong bg-cream-100/60"
+              className="absolute -inset-3 rounded-3xl bg-gradient-to-br from-cyan-400/20 via-cyan-400/5 to-transparent blur-xl"
             />
-            <div className="relative h-full w-full overflow-hidden rounded-[1.75rem] border border-line bg-gradient-to-br from-cream-100 via-cream-50 to-teal-50">
-            <DoctorPortrait
-                src="/doctor/doctor-profile.jpg"
+            <div className="relative aspect-[4/5] w-full overflow-hidden rounded-2xl border border-line shadow-card">
+              <DoctorPortrait
+                src="/doctor/kaleem-portrait.jpg"
                 alt={`Portrait of ${doctor.name}`}
                 fallbackLabel="Portrait coming soon"
-                priority          
               />
             </div>
           </div>
+        </div>
 
-          <div className="mt-10">
-            <div className="rounded-2xl border border-line bg-surface/70 p-6">
-              <Quote
-                className="h-4 w-4 text-teal-600"
-                strokeWidth={2}
-                aria-hidden="true"
-              />
-              <p className="mt-3 font-display text-lg text-ink-900 balance">
-                {doctor.tagline || "A patient-first approach to modern care."}
-              </p>
-            </div>
-          </div>
-        </Reveal>
-
-        <Reveal className="md:col-span-7" delay={0.12} y={24}>
+        {/* Copy */}
+        <div className="md:col-span-7 md:order-1">
           <p className="eyebrow">About the Doctor</p>
 
           <h2
             id="about-heading"
-            className="mt-5 font-display text-h2 text-ink-900 balance"
+            className="mt-4 font-display text-h2 text-navy-900 balance"
           >
-            Care shaped by evidence,{" "}
-            <em className="not-italic text-teal-600">
-              delivered with empathy.
-            </em>
+            {doctor.name}
           </h2>
 
-          {doctor.biography ? (
-            <p className="mt-6 max-w-2xl text-base leading-relaxed text-ink-500 pretty md:text-lg">
-              {doctor.biography}
-            </p>
-          ) : null}
+          <p className="mt-2 text-base font-medium text-navy-700 md:text-xl">
+            {doctor.title}
+          </p>
 
-          <dl className="mt-10 grid grid-cols-1 gap-x-10 gap-y-8 sm:grid-cols-2">
-            {hasExpertise ? (
-              <div>
-                <dt className="text-xs uppercase tracking-[0.14em] text-ink-400">
-                  Areas of Expertise
-                </dt>
-                <dd className="mt-3 space-y-1.5 text-sm text-ink-700">
-                  {doctor.expertise.slice(0, 6).map((item) => (
-                    <p key={item}>{item}</p>
-                  ))}
-                </dd>
-              </div>
+          <p className="mt-5 max-w-xl text-base leading-relaxed text-ink-600 pretty md:mt-6 md:text-lg">
+            {doctor.tagline}
+          </p>
+
+          {/* Chips */}
+          <ul className="mt-6 flex flex-wrap gap-2 md:mt-8 md:gap-3">
+            <Chip icon={Stethoscope}>{doctor.specialization}</Chip>
+            {doctor.clinic?.city ? (
+              <Chip icon={MapPin}>{doctor.clinic.city}</Chip>
             ) : null}
-
-            {hasLanguages ? (
-              <div>
-                <dt className="text-xs uppercase tracking-[0.14em] text-ink-400">
-                  Languages
-                </dt>
-                <dd className="mt-3 space-y-1.5 text-sm text-ink-700">
-                  {doctor.languages.map((lang) => (
-                    <p key={lang}>{lang}</p>
-                  ))}
-                </dd>
-              </div>
+            {doctor.experience ? (
+              <Chip icon={ShieldCheck}>
+                {doctor.experience}+ years in practice
+              </Chip>
             ) : null}
-
-            {hasMemberships ? (
-              <div className="sm:col-span-2">
-                <dt className="text-xs uppercase tracking-[0.14em] text-ink-400">
-                  Professional Memberships
-                </dt>
-                <dd className="mt-3 space-y-1.5 text-sm text-ink-700">
-                  {doctor.memberships.map((m) => (
-                    <p key={m.name || m}>{m.name || m}</p>
-                  ))}
-                </dd>
-              </div>
+            {doctor.awards?.length ? (
+              <Chip icon={Award}>{doctor.awards.length} Recognitions</Chip>
             ) : null}
-          </dl>
+          </ul>
 
-          <div className="mt-12 flex flex-wrap items-center gap-4">
+          {/* CTAs */}
+          <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center md:mt-10">
             <Link
-              href="/about"
-              className="group inline-flex items-center gap-2 rounded-full border border-line-strong bg-surface px-6 py-3.5 text-sm font-medium text-ink-900 transition hover:border-teal-500/40 hover:bg-teal-50"
+              href="/appointment"
+              className="group inline-flex items-center justify-center gap-2 rounded-full bg-red-500 px-6 py-3.5 text-sm font-semibold text-white shadow-sm transition-all hover:bg-red-600 hover:shadow-red"
             >
-              View Full Profile
-              <ArrowUpRight
-                className="h-4 w-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+              <CalendarHeart
+                className="h-4 w-4 transition-transform group-hover:-translate-y-0.5"
                 strokeWidth={2}
                 aria-hidden="true"
               />
+              Book Appointment
             </Link>
+
+            {doctor.whatsapp ? (
+              <a
+                href={wa}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group inline-flex items-center justify-center gap-2 rounded-full border border-line-strong bg-white px-6 py-3.5 text-sm font-semibold text-navy-900 transition-all hover:border-cyan-400/50 hover:bg-cyan-50"
+              >
+                <MessageCircle
+                  className="h-4 w-4 text-cyan-600 transition-transform group-hover:scale-110"
+                  strokeWidth={2}
+                  aria-hidden="true"
+                />
+                WhatsApp
+              </a>
+            ) : null}
           </div>
-        </Reveal>
+        </div>
       </div>
     </section>
+  );
+}
+
+function Chip({ icon: Icon, children }) {
+  return (
+    <li className="inline-flex items-center gap-1.5 rounded-full border border-line bg-cream-50 px-3 py-1.5 text-xs font-medium text-navy-800 transition hover:border-cyan-400/40 hover:bg-cyan-50 md:gap-2 md:px-4 md:py-2 md:text-sm">
+      <Icon
+        className="h-3.5 w-3.5 text-cyan-600 md:h-4 md:w-4"
+        strokeWidth={2}
+        aria-hidden="true"
+      />
+      {children}
+    </li>
   );
 }

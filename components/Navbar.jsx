@@ -1,45 +1,28 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { CalendarHeart, Menu, X } from "lucide-react";
 import { doctor } from "@/data/doctor";
-import { cn } from "@/lib/utils";
+import { scrollToId } from "@/lib/utils";
 
 const NAV_LINKS = [
-  { href: "/about", label: "About" },
-  { href: "/services", label: "Services" },
-  { href: "/#experience", label: "Experience" },
-  { href: "/contact", label: "Contact" },
+  { href: "#about", label: "About" },
+  { href: "#services", label: "Services" },
+  { href: "#experience", label: "Experience" },
+  { href: "#contact", label: "Contact" },
 ];
 
 export default function Navbar() {
-  const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
   const reduce = useReducedMotion();
+  const isHome = pathname === "/";
 
-  useEffect(() => {
-    let raf = 0;
-    const onScroll = () => {
-      cancelAnimationFrame(raf);
-      raf = requestAnimationFrame(() => {
-        setScrolled(window.scrollY > 12);
-      });
-    };
-    onScroll();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => {
-      cancelAnimationFrame(raf);
-      window.removeEventListener("scroll", onScroll);
-    };
-  }, []);
-
-  useEffect(() => {
-    setOpen(false);
-  }, [pathname]);
+  useEffect(() => setOpen(false), [pathname]);
 
   useEffect(() => {
     if (typeof document === "undefined") return;
@@ -49,132 +32,87 @@ export default function Navbar() {
     };
   }, [open]);
 
-  const initials = doctor.name
-    .replace(/^Dr\.?\s*/i, "")
-    .split(" ")
-    .map((w) => w[0])
-    .filter(Boolean)
-    .slice(0, 2)
-    .join("");
+  const handleAnchorClick = (e, hash) => {
+    if (!isHome) return;
+    e.preventDefault();
+    scrollToId(hash.replace("#", ""));
+    window.history.replaceState(null, "", hash);
+    setOpen(false);
+  };
 
   return (
     <motion.header
       initial={reduce ? false : { y: -16, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
-      transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-      className={cn(
-        "fixed inset-x-0 top-0 z-50 transition-all duration-500",
-        scrolled
-          ? "backdrop-blur-xl bg-cream-50/80 border-b border-line"
-          : "bg-transparent"
-      )}
+      transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+      className="sticky top-0 z-50 w-full border-b border-line bg-white shadow-[0_1px_3px_rgba(10,30,63,0.04)]"
     >
       <nav
         aria-label="Primary"
-        className="container-page flex h-16 items-center justify-between md:h-20"
+        className="container-page flex h-14 items-center justify-between gap-3 md:h-20"
       >
         <Link
           href="/"
-          className="group flex items-center gap-3 rounded-full py-1 pr-3 focus-visible:outline-none"
+          className="group flex min-w-0 items-center gap-2 py-1 pr-2 focus-visible:outline-none md:gap-3 md:pr-3"
           aria-label={`${doctor.name} — home`}
         >
-          <motion.span
-            animate={
-              reduce ? false : { scale: scrolled ? 0.95 : 1 }
-            }
-            transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-            className="grid h-10 w-10 place-items-center rounded-full border border-line-strong bg-surface text-sm font-medium tracking-tight text-ink-900 transition-colors group-hover:border-teal-500/40"
-          >
-            {initials || "Dr"}
-          </motion.span>
-          <span className="hidden flex-col leading-tight sm:flex">
-            <span className="text-sm font-medium tracking-tight text-ink-900">
+          <Image
+            src="/logo.png"
+            alt={`${doctor.name} logo`}
+            width={120}
+            height={120}
+            priority
+            className="h-9 w-9 shrink-0 object-contain transition-transform duration-300 group-hover:scale-105 md:h-12 md:w-12"
+          />
+          <span className="flex min-w-0 flex-col leading-tight">
+            <span className="truncate text-sm font-bold tracking-tight text-navy-900 md:text-base">
               {doctor.name}
             </span>
-            <span className="text-xs text-ink-500">
-              {doctor.specialization || doctor.title}
+            <span className="truncate text-[0.65rem] font-medium text-ink-500 md:text-xs">
+              {doctor.specialization}
             </span>
           </span>
         </Link>
 
-        <ul className="hidden items-center gap-1 md:flex">
-          {NAV_LINKS.map((link) => {
-            const active =
-              link.href !== "/#experience" &&
-              pathname?.startsWith(link.href);
-            return (
-              <li key={link.href}>
-                <Link
-                  href={link.href}
-                  className={cn(
-                    "relative rounded-full px-4 py-2 text-sm transition-colors",
-                    active ? "text-ink-900" : "text-ink-500 hover:text-ink-900"
-                  )}
-                >
-                  <span className="relative z-10">{link.label}</span>
-                  {active && (
-                    <motion.span
-                      layoutId="nav-active"
-                      className="absolute inset-0 -z-0 rounded-full bg-ink-900/[0.05]"
-                      transition={{
-                        type: "spring",
-                        stiffness: 380,
-                        damping: 30,
-                      }}
-                    />
-                  )}
-                </Link>
-              </li>
-            );
-          })}
+        <ul className="hidden flex-1 items-center justify-center gap-1 lg:flex">
+          {NAV_LINKS.map((link) => (
+            <li key={link.href}>
+              <Link
+                href={`/${link.href}`}
+                onClick={(e) => handleAnchorClick(e, link.href)}
+                className="relative rounded-full px-4 py-2 text-sm font-semibold text-navy-700 transition-colors hover:text-navy-900"
+              >
+                {link.label}
+              </Link>
+            </li>
+          ))}
         </ul>
 
-        <div className="hidden md:block">
+        <div className="flex shrink-0 items-center gap-2">
           <Link
             href="/appointment"
-            className="group inline-flex items-center gap-2 rounded-full bg-ink-900 px-5 py-2.5 text-sm font-medium text-cream-50 transition-all hover:bg-ink-800 hover:shadow-soft"
+            className="group inline-flex items-center gap-1.5 rounded-full bg-red-500 px-3 py-2 text-xs font-semibold text-white shadow-sm transition-all hover:bg-red-600 hover:shadow-red md:gap-2 md:px-5 md:py-2.5 md:text-sm"
           >
             <CalendarHeart
-              className="h-4 w-4 transition-transform group-hover:-translate-y-0.5"
-              strokeWidth={1.75}
+              className="h-3.5 w-3.5 transition-transform group-hover:-translate-y-0.5 md:h-4 md:w-4"
+              strokeWidth={2}
               aria-hidden="true"
             />
-            Book Appointment
+            <span className="hidden sm:inline">Book Appointment</span>
+            <span className="sm:hidden">Book</span>
           </Link>
-        </div>
 
-        <button
-          type="button"
-          onClick={() => setOpen((v) => !v)}
-          aria-label={open ? "Close menu" : "Open menu"}
-          aria-expanded={open}
-          aria-controls="mobile-menu"
-          className="grid h-10 w-10 place-items-center rounded-full border border-line bg-surface/70 text-ink-900 transition-colors hover:border-line-strong md:hidden"
-        >
-          <AnimatePresence mode="wait" initial={false}>
-            {open ? (
-              <motion.span
-                key="x"
-                initial={{ rotate: -45, opacity: 0 }}
-                animate={{ rotate: 0, opacity: 1 }}
-                exit={{ rotate: 45, opacity: 0 }}
-                transition={{ duration: 0.18 }}
-              >
-                <X className="h-5 w-5" />
-              </motion.span>
-            ) : (
-              <motion.span
-                key="menu"
-                initial={{ rotate: 45, opacity: 0 }}
-                animate={{ rotate: 0, opacity: 1 }}
-                exit={{ rotate: -45, opacity: 0 }}
-                transition={{ duration: 0.18 }}
-              >
-                <Menu className="h-5 w-5" />
-              </motion.span>
-            )}
-          </AnimatePresence>
-        </button>
+          <button
+            type="button"
+            onClick={() => setOpen((v) => !v)}
+            aria-label={open ? "Close menu" : "Open menu"}
+            aria-expanded={open}
+            aria-controls="mobile-menu"
+            className="grid h-9 w-9 place-items-center rounded-full border border-line bg-white text-navy-900 transition hover:border-line-strong md:h-10 md:w-10 lg:hidden"
+          >
+            {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+          </button>
+        </div>
       </nav>
 
       <AnimatePresence>
@@ -183,73 +121,22 @@ export default function Navbar() {
             id="mobile-menu"
             key="mobile-menu"
             initial={reduce ? { opacity: 0 } : { opacity: 0, height: 0 }}
-            animate={
-              reduce ? { opacity: 1 } : { opacity: 1, height: "auto" }
-            }
+            animate={reduce ? { opacity: 1 } : { opacity: 1, height: "auto" }}
             exit={reduce ? { opacity: 0 } : { opacity: 0, height: 0 }}
-            transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
-            className="md:hidden overflow-hidden"
+            transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+            className="overflow-hidden border-t border-line bg-white lg:hidden"
           >
-            <div className="border-t border-line bg-cream-50/95 backdrop-blur-xl">
-              <motion.div
-                initial="hidden"
-                animate="show"
-                variants={{
-                  hidden: {},
-                  show: {
-                    transition: {
-                      staggerChildren: reduce ? 0 : 0.05,
-                      delayChildren: 0.08,
-                    },
-                  },
-                }}
-                className="container-page flex flex-col gap-1 py-6"
-              >
-                {NAV_LINKS.map((link) => (
-                  <motion.div
-                    key={link.href}
-                    variants={{
-                      hidden: { opacity: 0, y: 8 },
-                      show: {
-                        opacity: 1,
-                        y: 0,
-                        transition: {
-                          duration: 0.4,
-                          ease: [0.22, 1, 0.36, 1],
-                        },
-                      },
-                    }}
-                  >
-                    <Link
-                      href={link.href}
-                      className="block rounded-2xl px-4 py-3 text-base text-ink-800 transition hover:bg-ink-900/[0.04]"
-                    >
-                      {link.label}
-                    </Link>
-                  </motion.div>
-                ))}
-                <motion.div
-                  variants={{
-                    hidden: { opacity: 0, y: 8 },
-                    show: {
-                      opacity: 1,
-                      y: 0,
-                      transition: {
-                        duration: 0.4,
-                        ease: [0.22, 1, 0.36, 1],
-                      },
-                    },
-                  }}
+            <div className="container-page flex flex-col gap-1 py-5 md:py-6">
+              {NAV_LINKS.map((link) => (
+                <Link
+                  key={link.href}
+                  href={`/${link.href}`}
+                  onClick={(e) => handleAnchorClick(e, link.href)}
+                  className="rounded-2xl px-4 py-3 text-base font-medium text-navy-900 transition hover:bg-cyan-50"
                 >
-                  <Link
-                    href="/appointment"
-                    className="mt-3 inline-flex w-full items-center justify-center gap-2 rounded-full bg-ink-900 px-5 py-3.5 text-sm font-medium text-cream-50"
-                  >
-                    <CalendarHeart className="h-4 w-4" strokeWidth={1.75} />
-                    Book Appointment
-                  </Link>
-                </motion.div>
-              </motion.div>
+                  {link.label}
+                </Link>
+              ))}
             </div>
           </motion.div>
         )}

@@ -4,8 +4,8 @@ import { useState } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import {
   AlertCircle,
+  CalendarHeart,
   CheckCircle2,
-  Loader2,
   MessageCircle,
   Send,
 } from "lucide-react";
@@ -13,10 +13,11 @@ import { doctor } from "@/data/doctor";
 import { whatsappUrl } from "@/lib/utils";
 
 const CONSULTATION_TYPES = [
-  { value: "in-person", label: "In-person consultation" },
-  { value: "follow-up", label: "Follow-up visit" },
-  { value: "second-opinion", label: "Second opinion" },
-  { value: "other", label: "Other" },
+  { value: "In-person consultation", label: "In-person consultation" },
+  { value: "Follow-up visit", label: "Follow-up visit" },
+  { value: "Second opinion", label: "Second opinion" },
+  { value: "Online consultation", label: "Online consultation" },
+  { value: "Other", label: "Other" },
 ];
 
 const initial = {
@@ -25,7 +26,7 @@ const initial = {
   email: "",
   date: "",
   time: "",
-  type: "in-person",
+  type: CONSULTATION_TYPES[0].value,
   message: "",
 };
 
@@ -33,7 +34,7 @@ export default function AppointmentForm() {
   const reduce = useReducedMotion();
   const [values, setValues] = useState(initial);
   const [errors, setErrors] = useState({});
-  const [status, setStatus] = useState("idle"); // idle | submitting | success
+  const [submitted, setSubmitted] = useState(false);
 
   const update = (field) => (e) => {
     const v = e.target.value;
@@ -54,81 +55,99 @@ export default function AppointmentForm() {
     return Object.keys(next).length === 0;
   };
 
-  const buildMessage = () => {
+  /**
+   * Build a clean, professional WhatsApp message with all appointment details.
+   */
+  const buildWhatsAppMessage = () => {
     const lines = [
-      `Hello ${doctor.name}, I would like to book an appointment.`,
-      "",
-      `Name: ${values.name}`,
-      `Phone: ${values.phone}`,
-      values.email ? `Email: ${values.email}` : null,
-      `Preferred date: ${values.date}`,
-      values.time ? `Preferred time: ${values.time}` : null,
-      `Consultation type: ${
-        CONSULTATION_TYPES.find((t) => t.value === values.type)?.label ||
-        values.type
-      }`,
-      values.message ? `Message: ${values.message}` : null,
-    ].filter(Boolean);
+      `*New Appointment Request*`,
+      ``,
+      `*Doctor:* ${doctor.name}`,
+      `*Clinic:* ${doctor.clinic?.name || "Nishtar Hospital"}`,
+      ``,
+      `---`,
+      ``,
+      `*Patient Name:* ${values.name.trim()}`,
+      `*Phone:* ${values.phone.trim()}`,
+      values.email ? `*Email:* ${values.email.trim()}` : null,
+      `*Preferred Date:* ${formatDate(values.date)}`,
+      values.time ? `*Preferred Time:* ${formatTime(values.time)}` : null,
+      `*Consultation Type:* ${values.type}`,
+      values.message ? `` : null,
+      values.message ? `*Message from patient:*` : null,
+      values.message ? values.message.trim() : null,
+      ``,
+      `---`,
+      ``,
+      `_This message was sent from the appointment form on ${doctor.seo?.siteUrl || "the website"}._`,
+    ].filter((l) => l !== null);
+
     return lines.join("\n");
   };
 
-  const onSubmit = async (e) => {
+  const onSubmit = (e) => {
     e.preventDefault();
     if (!validate()) return;
-    setStatus("submitting");
 
-    // NOTE: no backend yet. We simulate a short "send" and then reveal
-    // the success state + a WhatsApp handoff. Replace this block with a
-    // real API call when a backend endpoint is available.
-    await new Promise((r) => setTimeout(r, 900));
-    setStatus("success");
+    // Open WhatsApp with the message prefilled — this is the "submission".
+    const url = whatsappUrl(doctor.whatsapp, buildWhatsAppMessage());
+
+    // Open in new tab (opens WhatsApp app on mobile, WhatsApp Web on desktop)
+    window.open(url, "_blank", "noopener,noreferrer");
+
+    // Show success state
+    setSubmitted(true);
   };
 
   const reset = () => {
     setValues(initial);
     setErrors({});
-    setStatus("idle");
+    setSubmitted(false);
   };
 
-  const waHref = whatsappUrl(doctor.whatsapp, buildMessage());
-
   /* ---------------- Success state ---------------- */
-  if (status === "success") {
+  if (submitted) {
     return (
       <motion.div
         initial={reduce ? { opacity: 1 } : { opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-        className="rounded-3xl border border-line bg-surface p-8 md:p-10"
+        className="rounded-3xl border border-line bg-white p-8 shadow-card md:p-10"
         role="status"
         aria-live="polite"
       >
-        <div className="grid h-12 w-12 place-items-center rounded-2xl bg-teal-50 text-teal-600">
+        <div className="grid h-12 w-12 place-items-center rounded-2xl bg-cyan-50 text-cyan-600">
           <CheckCircle2 className="h-6 w-6" strokeWidth={2} />
         </div>
-        <h3 className="mt-6 font-display text-2xl text-ink-900">
-          Request prepared.
+
+        <h3 className="mt-6 font-display text-2xl font-bold text-navy-900 md:text-3xl">
+          Almost done — send it on WhatsApp.
         </h3>
-        <p className="mt-3 max-w-lg text-sm leading-relaxed text-ink-500 pretty">
-          Your request details are ready. To confirm your appointment, please
-          send them via WhatsApp — the clinic will respond to confirm the
-          slot.
+
+        <p className="mt-3 max-w-lg text-sm leading-relaxed text-ink-500 pretty md:text-base">
+          We&rsquo;ve opened WhatsApp with your appointment details ready to
+          send. Just press <strong className="text-navy-800">Send</strong> in
+          WhatsApp, and the clinic will confirm your appointment.
+        </p>
+
+        <p className="mt-3 max-w-lg text-xs leading-relaxed text-ink-400">
+          Didn&rsquo;t open automatically? Click below to open it again.
         </p>
 
         <div className="mt-7 flex flex-col gap-3 sm:flex-row">
           <a
-            href={waHref}
+            href={whatsappUrl(doctor.whatsapp, buildWhatsAppMessage())}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center justify-center gap-2 rounded-full bg-ink-900 px-6 py-3.5 text-sm font-medium text-cream-50 transition hover:bg-ink-800"
+            className="inline-flex items-center justify-center gap-2 rounded-full bg-navy-900 px-6 py-3.5 text-sm font-semibold text-white transition hover:bg-navy-800"
           >
             <MessageCircle className="h-4 w-4" strokeWidth={2} aria-hidden="true" />
-            Send via WhatsApp
+            Reopen WhatsApp
           </a>
           <button
             type="button"
             onClick={reset}
-            className="inline-flex items-center justify-center gap-2 rounded-full border border-line-strong bg-surface px-6 py-3.5 text-sm font-medium text-ink-900 transition hover:border-teal-500/40 hover:bg-teal-50"
+            className="inline-flex items-center justify-center gap-2 rounded-full border border-line-strong bg-white px-6 py-3.5 text-sm font-semibold text-navy-900 transition hover:border-cyan-400/40 hover:bg-cyan-50"
           >
             Send another request
           </button>
@@ -142,32 +161,41 @@ export default function AppointmentForm() {
     <form
       onSubmit={onSubmit}
       noValidate
-      className="rounded-3xl border border-line bg-surface p-6 md:p-10"
+      className="relative overflow-hidden rounded-3xl border border-line bg-white p-6 shadow-card md:p-10"
       aria-labelledby="appointment-form-heading"
     >
+      {/* Red top accent bar */}
+      <span
+        aria-hidden="true"
+        className="absolute left-0 top-0 h-1 w-full bg-gradient-to-r from-red-500 via-red-500 to-cyan-400"
+      />
+
       <h2
         id="appointment-form-heading"
-        className="font-display text-2xl text-ink-900"
+        className="font-display text-2xl font-bold text-navy-900 md:text-3xl"
       >
         Request an appointment
       </h2>
-      <p className="mt-2 text-sm text-ink-500">
-        Fill in the details below. Fields marked with * are required.
+      <p className="mt-2 text-sm text-ink-500 md:text-base">
+        Fill in the details below. Your request will be sent directly to the
+        clinic&rsquo;s WhatsApp. Fields marked with{" "}
+        <span className="text-red-500">*</span> are required.
       </p>
 
       <div className="mt-8 grid gap-5 md:grid-cols-2">
         <Field
           id="name"
-          label="Full name *"
+          label="Full name"
           value={values.name}
           onChange={update("name")}
           error={errors.name}
           autoComplete="name"
           required
+          placeholder="e.g. Ahmed Khan"
         />
         <Field
           id="phone"
-          label="Phone number *"
+          label="Phone number"
           value={values.phone}
           onChange={update("phone")}
           error={errors.phone}
@@ -178,16 +206,17 @@ export default function AppointmentForm() {
         />
         <Field
           id="email"
-          label="Email"
+          label="Email (optional)"
           value={values.email}
           onChange={update("email")}
           error={errors.email}
           type="email"
           autoComplete="email"
+          placeholder="you@example.com"
         />
         <Field
           id="date"
-          label="Preferred date *"
+          label="Preferred date"
           value={values.date}
           onChange={update("date")}
           error={errors.date}
@@ -196,7 +225,7 @@ export default function AppointmentForm() {
         />
         <Field
           id="time"
-          label="Preferred time"
+          label="Preferred time (optional)"
           value={values.time}
           onChange={update("time")}
           type="time"
@@ -204,7 +233,7 @@ export default function AppointmentForm() {
         <div>
           <label
             htmlFor="type"
-            className="block text-xs uppercase tracking-[0.14em] text-ink-400"
+            className="block text-xs font-bold uppercase tracking-[0.14em] text-ink-400"
           >
             Consultation type
           </label>
@@ -213,7 +242,7 @@ export default function AppointmentForm() {
             name="type"
             value={values.type}
             onChange={update("type")}
-            className="mt-2 w-full rounded-2xl border border-line bg-cream-50 px-4 py-3 text-sm text-ink-900 outline-none transition focus:border-teal-500/60 focus:bg-surface"
+            className="mt-2 w-full rounded-2xl border border-line bg-cream-50 px-4 py-3 text-sm text-navy-900 outline-none transition focus:border-cyan-500/60 focus:bg-white"
           >
             {CONSULTATION_TYPES.map((t) => (
               <option key={t.value} value={t.value}>
@@ -225,9 +254,9 @@ export default function AppointmentForm() {
         <div className="md:col-span-2">
           <label
             htmlFor="message"
-            className="block text-xs uppercase tracking-[0.14em] text-ink-400"
+            className="block text-xs font-bold uppercase tracking-[0.14em] text-ink-400"
           >
-            Message
+            Message (optional)
           </label>
           <textarea
             id="message"
@@ -235,8 +264,8 @@ export default function AppointmentForm() {
             rows={4}
             value={values.message}
             onChange={update("message")}
-            placeholder="Briefly describe the reason for your visit (optional)."
-            className="mt-2 w-full resize-none rounded-2xl border border-line bg-cream-50 px-4 py-3 text-sm text-ink-900 outline-none transition focus:border-teal-500/60 focus:bg-surface"
+            placeholder="Briefly describe the reason for your visit."
+            className="mt-2 w-full resize-none rounded-2xl border border-line bg-cream-50 px-4 py-3 text-sm text-navy-900 outline-none transition focus:border-cyan-500/60 focus:bg-white"
           />
         </div>
       </div>
@@ -245,38 +274,30 @@ export default function AppointmentForm() {
       <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center">
         <button
           type="submit"
-          disabled={status === "submitting"}
-          className="inline-flex items-center justify-center gap-2 rounded-full bg-ink-900 px-6 py-3.5 text-sm font-medium text-cream-50 transition hover:bg-ink-800 disabled:cursor-not-allowed disabled:opacity-70"
+          className="group inline-flex items-center justify-center gap-2 rounded-full bg-red-500 px-6 py-3.5 text-sm font-semibold text-white shadow-sm transition-all hover:bg-red-600 hover:shadow-red"
         >
-          {status === "submitting" ? (
-            <>
-              <Loader2 className="h-4 w-4 animate-spin" strokeWidth={2} aria-hidden="true" />
-              Sending…
-            </>
-          ) : (
-            <>
-              <Send className="h-4 w-4" strokeWidth={2} aria-hidden="true" />
-              Book Appointment
-            </>
-          )}
+          <Send
+            className="h-4 w-4 transition-transform group-hover:translate-x-0.5"
+            strokeWidth={2}
+            aria-hidden="true"
+          />
+          Book Appointment via WhatsApp
         </button>
 
-        {doctor.whatsapp ? (
+        {doctor.phone ? (
           <a
-            href={waHref}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center justify-center gap-2 rounded-full border border-line-strong bg-surface px-6 py-3.5 text-sm font-medium text-ink-900 transition hover:border-teal-500/40 hover:bg-teal-50"
+            href={`tel:${doctor.phoneRaw || doctor.phone}`}
+            className="inline-flex items-center justify-center gap-2 rounded-full border border-line-strong bg-white px-6 py-3.5 text-sm font-semibold text-navy-900 transition hover:border-cyan-400/40 hover:bg-cyan-50"
           >
-            <MessageCircle className="h-4 w-4 text-teal-600" strokeWidth={2} aria-hidden="true" />
-            Continue on WhatsApp
+            <CalendarHeart className="h-4 w-4 text-cyan-600" strokeWidth={2} aria-hidden="true" />
+            Call Clinic Instead
           </a>
         ) : null}
       </div>
 
       <p className="mt-6 text-xs leading-relaxed text-ink-400">
-        Your information is used only to process this appointment request and is
-        never stored in your browser.
+        Your information is used only to process this appointment request. It
+        is not stored on this website.
       </p>
     </form>
   );
@@ -296,13 +317,16 @@ function Field({
   placeholder,
 }) {
   const errId = `${id}-error`;
+  const requiredMark = required ? <span className="text-red-500"> *</span> : null;
+
   return (
     <div>
       <label
         htmlFor={id}
-        className="block text-xs uppercase tracking-[0.14em] text-ink-400"
+        className="block text-xs font-bold uppercase tracking-[0.14em] text-ink-400"
       >
         {label}
+        {requiredMark}
       </label>
       <input
         id={id}
@@ -315,16 +339,16 @@ function Field({
         placeholder={placeholder}
         aria-invalid={error ? "true" : undefined}
         aria-describedby={error ? errId : undefined}
-        className={`mt-2 w-full rounded-2xl border bg-cream-50 px-4 py-3 text-sm text-ink-900 outline-none transition focus:bg-surface ${
+        className={`mt-2 w-full rounded-2xl border bg-cream-50 px-4 py-3 text-sm text-navy-900 outline-none transition focus:bg-white ${
           error
             ? "border-red-400/70 focus:border-red-500/70"
-            : "border-line focus:border-teal-500/60"
+            : "border-line focus:border-cyan-500/60"
         }`}
       />
       {error ? (
         <p
           id={errId}
-          className="mt-2 inline-flex items-center gap-1.5 text-xs text-red-500"
+          className="mt-2 inline-flex items-center gap-1.5 text-xs font-medium text-red-500"
         >
           <AlertCircle className="h-3.5 w-3.5" strokeWidth={2} aria-hidden="true" />
           {error}
@@ -332,4 +356,36 @@ function Field({
       ) : null}
     </div>
   );
+}
+
+/* ------------------------------------------------------------------ */
+/* Helpers to format date/time into friendly text                     */
+/* ------------------------------------------------------------------ */
+
+function formatDate(isoDate) {
+  if (!isoDate) return "";
+  try {
+    const d = new Date(isoDate);
+    return d.toLocaleDateString("en-GB", {
+      weekday: "long",
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+    });
+  } catch {
+    return isoDate;
+  }
+}
+
+function formatTime(time) {
+  if (!time) return "";
+  try {
+    const [h, m] = time.split(":");
+    const hour = parseInt(h, 10);
+    const period = hour >= 12 ? "PM" : "AM";
+    const hour12 = hour % 12 === 0 ? 12 : hour % 12;
+    return `${hour12}:${m} ${period}`;
+  } catch {
+    return time;
+  }
 }

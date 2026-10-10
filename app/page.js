@@ -1,4 +1,4 @@
-import Hero from "@/components/Hero";
+import HeroSlider from "@/components/HeroSlider";
 import TrustStats from "@/components/TrustStats";
 import About from "@/components/About";
 import Services from "@/components/Services";
@@ -11,10 +11,10 @@ import Contact from "@/components/Contact";
 export default function HomePage() {
   return (
     <>
-      <Hero />
-      <TrustStats />
+      <HeroSlider />
       <About />
-      <Services limit={3} />
+      <TrustStats />
+      <Services />
       <Experience />
       <Qualifications />
       <Testimonials />
