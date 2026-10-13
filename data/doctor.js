@@ -12,69 +12,80 @@ export const doctor = {
   name: "Dr. Kaleem Ullah",
   title: "Professor & Chairman, Department of Thoracic Surgery",
   specialization: "Thoracic Surgery",
-  subSpecialization: "Nishtar Hospital, Multan",
-  experience: "17", // years since MBBS (2007 → present). Update as needed.
+  subSpecialization: "Fatima Medical Center, Multan",
+  experience: "17",
   tagline:
     "Evidence-based thoracic surgical care — grounded in academic rigor and a patient-first approach.",
   biography:
     "Dr. Kaleem Ullah is a Thoracic Surgeon serving as Professor and Chairman of the Department of Thoracic Surgery at Nishtar Hospital, Multan. A native of Multan, he completed his MBBS from Nishtar Medical College in 2007 and earned his Fellowship in Thoracic Surgery in 2014, following structured training at Lady Reading Hospital, Peshawar, and Nishtar Hospital, Multan. He has served in academic and clinical leadership roles at Nishtar Medical College and Multan Medical & Dental College, and since 2018 has been an accredited supervisor and examiner for FCPS and MS Thoracic Surgery. His work spans clinical thoracic surgery, postgraduate medical education, health informatics, and institutional development.",
 
   // ---- Contact ----
-  phone: "0300 632 9916", // display format
-  phoneRaw: "+923006329916", // for tel: links
-  whatsapp: "923006329916", // digits only, international, no +
+  phone: "0300 632 9916",
+  phoneRaw: "+923006329916",
+  whatsapp: "923006329916",
   email: "kaleemullah000010@gmail.com",
 
-  // ---- Clinic ----
+  // ---- Clinic (PRIMARY — Fatima Medical Center) ----
   clinic: {
-    name: "Nishtar Hospital",
-    address: "Nishtar Hospital",
+    name: "Fatima Medical Center",
+    address: "Rasheeda Abad Chowk",
     city: "Multan, Punjab, Pakistan",
-    hours: [], // ← provide later
+    hours: [
+      { day: "Monday", time: "6:00 PM – 8:00 PM" },
+      { day: "Tuesday", time: "6:00 PM – 8:00 PM" },
+      { day: "Wednesday", time: "6:00 PM – 8:00 PM" },
+      { day: "Thursday", time: "6:00 PM – 8:00 PM" },
+      { day: "Friday", time: "6:00 PM – 8:00 PM" },
+      { day: "Saturday", time: "6:00 PM – 8:00 PM" },
+      { day: "Sunday", time: "Closed" },
+    ],
     parking: "",
     onlineConsultation: false,
     onlineConsultationNote: "",
-    mapUrl: "https://maps.google.com/?q=Nishtar+Hospital+Multan",
+    mapUrl:
+      "https://www.google.com/maps/search/?api=1&query=Fatima+Medical+Center+Rasheeda+Abad+Chowk+Multan",
     mapEmbedUrl: "",
   },
 
-      // ---- Hospitals where the doctor practices ----
+  // ---- Hospitals where the doctor practices ----
   hospitals: [
     {
       name: "Nishtar Hospital",
       area: "Multan",
       primary: true,
-      mapUrl: "https://www.google.com/maps/search/?api=1&query=Nishtar+Hospital+Multan",
+      mapUrl:
+        "https://www.google.com/maps/search/?api=1&query=Nishtar+Hospital+Multan",
+    },
+    {
+      name: "Fatima Medical Center",
+      area: "Rasheeda Abad Chowk, Multan",
+      featured: true,
+      mapUrl:
+        "https://www.google.com/maps/search/?api=1&query=Fatima+Medical+Center+Rasheeda+Abad+Chowk+Multan",
     },
     {
       name: "Chenab Hospital",
       area: "Chungi No. 1, Multan",
-      mapUrl: "https://www.google.com/maps/search/?api=1&query=Chenab+Hospital+Chungi+No+1+Multan",
-    },
-    {
-      name: "South Punjab Hospital",
-      area: "Multan",
-      mapUrl: "https://www.google.com/maps/search/?api=1&query=South+Punjab+Hospital+Multan",
+      mapUrl:
+        "https://www.google.com/maps/search/?api=1&query=Chenab+Hospital+Chungi+No+1+Multan",
     },
     {
       name: "Mukhtar A. Sheikh Hospital",
       area: "Multan",
-      mapUrl: "https://www.google.com/maps/search/?api=1&query=Mukhtar+A+Sheikh+Hospital+Multan",
+      mapUrl:
+        "https://www.google.com/maps/search/?api=1&query=Mukhtar+A+Sheikh+Hospital+Multan",
     },
     {
       name: "Buch International Hospital",
       area: "Multan",
-      mapUrl: "https://www.google.com/maps/search/?api=1&query=Buch+International+Hospital+Multan",
+      mapUrl:
+        "https://www.google.com/maps/search/?api=1&query=Buch+International+Hospital+Multan",
     },
     {
       name: "City Hospital",
       area: "Multan",
-      mapUrl: "https://www.google.com/maps/search/?api=1&query=City+Hospital+Multan",
-    },
-    {
-      name: "Fatima Hospital",
-      area: "Multan",
-      mapUrl: "https://www.google.com/maps/search/?api=1&query=Fatima+Hospital+Multan",
+      mapUrl:
+        "https://www.google.com/maps/search/?api=1&query=City+Hospital+Multan",
     },
   ],
 
@@ -111,10 +122,29 @@ export const doctor = {
     },
   ],
 
+  // ---- Professional Memberships & Societies ----
   memberships: [
-    { name: "Department of Medical Education, Nishtar Medical University" },
-    { name: "Quality Enhancement Cell (QEC), Nishtar Medical University" },
-    { name: "American College of Surgeons (FACS)" },
+    {
+      name: "PACVTS — Pakistan Association of Cardiovascular & Thoracic Surgeons",
+    },
+    {
+      name: "PSTS — Pakistan Society of Thoracic Surgeons",
+    },
+    {
+      name: "SEATS — Society for Excellence in Advanced Thoracic Surgery",
+    },
+    {
+      name: "ATCSA — Asian Thoracic & Cardiovascular Surgeons Association",
+    },
+    {
+      name: "Department of Medical Education, Nishtar Medical University",
+    },
+    {
+      name: "Quality Enhancement Cell (QEC), Nishtar Medical University",
+    },
+    {
+      name: "American College of Surgeons (FACS)",
+    },
   ],
 
   awards: [
@@ -128,11 +158,16 @@ export const doctor = {
       issuer: "Punjab Public Service Commission",
       year: "2026",
     },
+    {
+      title: "Represented Pakistan at multiple international thoracic surgery conferences",
+      issuer: "International Forums",
+      year: "",
+    },
   ],
 
   // ---- Practice ----
-   // ---- Services (bilingual — EN + UR) ----
-   services: [
+  // ---- Services (bilingual — EN + UR) ----
+  services: [
     {
       slug: "vats",
       title: "Video-Assisted Thoracoscopic Surgery (VATS)",
@@ -282,20 +317,22 @@ export const doctor = {
     },
   ],
 
-  languages: ["English", "Urdu", "Punjabi"], // ← correct if needed
+  languages: ["English", "Urdu", "Punjabi"],
 
-  // ---- Testimonials (empty until real, consented ones are provided) ----
   testimonials: [],
 
-  // ---- FAQ (generic process questions; replace with practice-specific answers) ----
   faqs: [
     {
       q: "How can I book an appointment?",
-      a: "You can request an appointment through the booking form on this website, or contact the clinic via WhatsApp using the floating button at the bottom of the screen.",
+      a: "You can request an appointment through the booking form on this website, or contact the clinic directly via WhatsApp. Both methods reach the clinic directly.",
+    },
+    {
+      q: "What are the clinic timings?",
+      a: "Consultations are available at Fatima Medical Center, Rasheeda Abad Chowk, Multan, from 6:00 PM to 8:00 PM daily, except Sunday.",
     },
     {
       q: "Where is the clinic located?",
-      a: "Consultations are held at Nishtar Hospital, Multan. Please refer to the Contact page for the exact location and directions.",
+      a: "The primary clinic is at Fatima Medical Center, Rasheeda Abad Chowk, Multan. Dr. Kaleem Ullah also practices at Nishtar Hospital and other major hospitals in Multan.",
     },
     {
       q: "What should I bring to my consultation?",
@@ -303,18 +340,16 @@ export const doctor = {
     },
   ],
 
-  // ---- Social (empty until provided) ----
   socialLinks: {
     instagram: "",
     linkedin: "",
   },
 
-  // ---- SEO ----
   seo: {
-    siteUrl: "https://dr-kaleemullah.vercel.app", // ← replace with the real domain once live
+    siteUrl: "https://dr-kaleemullah.vercel.app",
     siteName: "Dr. Kaleem Ullah",
     defaultDescription:
-      "Professor & Chairman, Department of Thoracic Surgery, Nishtar Hospital, Multan. Clinical thoracic surgery, postgraduate education, and academic leadership.",
+      "Professor & Chairman, Department of Thoracic Surgery, Nishtar Hospital, Multan. Thoracic surgical consultations available daily at Fatima Medical Center, Rasheeda Abad Chowk, Multan.",
   },
 };
 
