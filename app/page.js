@@ -16,7 +16,6 @@ export default function HomePage() {
       <TrustStats />
       <Services />
       <Experience />
-      <Qualifications />
       <Testimonials />
       <FAQ />
       <Contact />
